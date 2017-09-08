@@ -1,0 +1,108 @@
+#!usr/bin/env python
+
+#          RESOURCES
+# This file contains the following:
+# neuralNet()
+# logistic_regress()
+# volumeRender()
+# multivariate()
+# popArray()
+# graphit()
+# downloadAndExtract()
+# multiDownloadAndExtract()
+# loadFile()
+# preprocess()
+# exceptionIndex()
+# pearsonr()
+# findNonzero()
+# populateData()
+# Vertex
+# Graph
+# array()
+
+def neuralNet():
+
+ import numpy as np
+ x = np.random.randn(10,3)
+ x = np.append(np.ones(shape = (10,1), dtype = np.float32) , x, 1)
+ y = np.zeros(shape=(10,3), dtype = np.float32)
+ theta2 = np.ones( shape = (3,4), dtype = np.float32)
+ theta1 = np.ones( shape = (3,4), dtype = np.float32)
+
+  
+ for i in range(10):
+   y[i][np.random.randint(3)] = 1
+  
+  
+ def sigmoid(x): return 1/(1+np.exp(-x))
+  
+ def hyp(theta1,theta2):
+   a2=sigmoid(np.dot(x,np.transpose(theta1))) 
+   a2= np.append(np.ones(shape = (10,1), dtype = np.float32) , a2, 1)
+   a3=sigmoid(np.dot(a2,np.transpose(theta2)))
+   return a3
+
+ def cost():
+   return sum(sum(-np.multiply(np.log(hyp(theta1,theta2)),y) - np.multiply(np.log(1-hyp(theta1,theta2)),(1-y))))/x.shape[0]
+  
+ 
+ for i in range(100):
+  a2=sigmoid(np.dot(x,np.transpose(theta1)))
+  a2=np.append( np.ones( shape = (x.shape[0],1), dtype =np.float32) , a2, 1)
+  a3=sigmoid(np.dot(x,np.transpose(theta2)))
+  delta3 =a3 - y 
+  delta2 = np.dot(np.append(np.ones(shape=(10,1), dtype = np.float32),delta3,1),np.transpose(theta2))
+  gdash = np.multiply(a3,(1-a3))
+  delta2 = np.multiply(delta2,gdash)
+  d1 = np.dot(np.transpose(delta2),x)
+  d2 = np.dot(np.transpose(delta3),a2)
+  theta1_grad = d1/x.shape[0]
+  theta2_grad = d2/x.shape[0]
+  theta2 = theta2 - 0.8 * theta2_grad  
+  theta1 = theta1 - 0.8 * theta1_grad  
+  print(cost())
+
+
+def logisticRegress(x,y,flag): 
+ import numpy as np
+ import matplotlib.pyplot as plt
+ from scipy.interpolate import interp1d
+ if(flag==1):
+  x = np.asarray([1,9,2,3,4])
+ # x = np.random.randn(10) 
+  x= x.reshape(x.size,1)
+  y = np.asarray([0,1,0,0,1])
+  y = y.reshape(y.size,1)
+
+ x = np.append(np.ones(shape = (x.shape[0],1), dtype = np.float32),x,1)
+ theta = np.ones(shape = (x.shape[1],1), dtype = np.float32)
+ j = np.zeros(shape=(100), dtype = np.float32)
+ iters = np.arange(100)
+ # y = np.asarray([int(x[i][1]>0) for i in range(x.shape[0])])
+ 
+ def calculateLoss(): 
+   return  sum(-np.multiply(np.log(hyp(theta)),y) - np.multiply(np.log(1-hyp(theta)),(1-y)))/x.shape[0]
+
+ def hyp(theta):
+   return 1/(1+np.exp(-np.dot(x,theta)))
+
+ def gradientDescent():
+    alpha = 0.1
+    theta[1][0] = theta[1][0] - sum(np.multiply((hyp(theta)-y), x[:,1].reshape(x.shape[0],1)))*(alpha/x.shape[0])
+  
+ print(calculateLoss()) 
+ for i in range(100):
+  gradientDescent();
+  j[i] = calculateLoss();
+  
+ #f2 = interp1d(iters, j, kind='cubic')
+ plt.plot(iters, j)
+ plt.show()
+ 
+ 
+
+# for i in range(10):
+#   print("iteration ",i+1)
+#   gradientDescent(theta)
+#   print("cost: ",calculateLoss(theta,y))
+  
